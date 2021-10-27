@@ -1,0 +1,54 @@
+from aiogram import Bot, types
+from aiogram.dispatcher import Dispatcher
+from aiogram.utils import executor
+
+from pyqiwip2p import QiwiP2P
+from pyqiwip2p.types import QiwiCustomer, QiwiDatetime
+
+
+
+bot = Bot(token=':')
+dp = Dispatcher(bot)
+p2p = QiwiP2P(auth_key=QIWI_PRIV_KEY)
+
+@dp.message_handler(text='Заказ с выбором гемов')
+async def order_choose(message):
+    if message.text == 'Заказ с выбором гемов':
+        await bot.send_message(message.from_user.id,'Напишите числом количество лямов, сколько хотели бы купить',)
+        message_gems = int(input(message.text))
+        if message_gems > 0:
+            if message_gems <= 17 and message_gems > 0:
+                oplata = 5 * message_gems
+            elif message_gems > 17 and message_gems <= 57:
+                oplata = 4.5 * message_gems
+            else:
+                oplata = 4 * message_gems
+        else:
+            await bot.send_message(message.from_user.id, 'Нельзя столько гемов выбрать')
+    await bot.send_message(message.from_user.id,  'Столько рублей выйдет оплатить', oplata)
+
+@dp.message_handler()
+async def order(message):
+    if message.text == 'Заказ':
+        await bot.send_message(message.from_user.id,'Заказ. выберите сколько гемов хотели бы купить (количество лямов числом) или нажмите один из вариантов сверху',)
+
+@dp.message_handler(text = 'Связь с владельцем')
+async def user(message):
+    if message.text  == 'Связь с владельцем':
+        await bot.send_message(message.chat.id, 'Владелец: @Gosha7728 (ТГ), Gosha#7728 (ДС)')
+
+
+@dp.message_handler(commands=['start', 'help', 'order', 'order_choose'])#вывод текста при старте или хелпе через команды
+async def process_start_command(message: types.Message):
+    await bot.send_message(message.from_user.id, 'Привет! Это бот Гоши. Напиши <Заказ> если хотел бы перейти к заказу')#функция вывода текста при командах выше
+#Обработка сообщени
+
+
+
+
+
+if __name__ == '__main__':
+    executor.start_polling(dp)#просто запуск бота(всего кода)
+
+
+#квыбор гемов для покупки
